@@ -29,7 +29,14 @@ botmaster.use({
 	type: "incoming",
 	name: "my-middleware",
 	controller: (bot, update) => {
-		return bot.reply(update, "Hello world!");
+		if (update.message.text == "Hello") {
+			return bot.reply(update, "Hello world!");
+		}
+		if (update.message.text == "Goodbye") {
+			return bot.reply(update, "Goodbye world!");
+		} else {
+			return bot.reply(update, "Nope");
+		}
 	}
 });
 
