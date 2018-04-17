@@ -1,46 +1,37 @@
-const express = require("express"); //added
-const port = process.env.PORT || 3000; //added
-const app = express(); //added
-
-// Routing for index.html
-app.use(express.static(__dirname + "/public")); //added
-
-const server = app.listen(port, "0.0.0.0", () => {
-	//added
-	console.log("Server listening at port %d", port);
-});
-
+const express = require("express");
+const app = express();
 const Botmaster = require("botmaster");
 const SocketioBot = require("botmaster-socket.io");
+const port = process.env.PORT || 3000;
+const { Wit, log, interactive } = require("node-wit");
+const client = new Wit({
+	accessToken: "DOBCAP2OLGE3X7H3NC4HKHIL5HBMH77B"
+});
+
+app.use(express.static(__dirname + "/public"));
+
+const server = app.listen(port, () =>
+	console.log("Example app listening on port %d", port)
+);
 
 const botmaster = new Botmaster({
 	server
 });
 
-const socketioSettings = {
-	id: "SOME_BOT_ID_OF_YOUR_CHOOSING",
-	server
-};
+const socketioBot = new SocketioBot({ id: "Marvin", server });
 
-const socketioBot = new SocketioBot(socketioSettings);
 botmaster.addBot(socketioBot);
 
 botmaster.use({
 	type: "incoming",
 	name: "my-middleware",
 	controller: (bot, update) => {
-		if (update.message.text == "Hello") {
-			return bot.reply(update, "Hello world!");
-		}
-		if (update.message.text == "Goodbye") {
-			return bot.reply(update, "Goodbye world!");
-		} else {
-			return bot.reply(update, "Nope");
-		}
+		client.message(update.message.text, {}).then(data => {
+			return bot.reply(update, JSON.stringify(data));
+		});
 	}
 });
 
 botmaster.on("error", (bot, err) => {
-	// added
-	console.log(err.stack); // added
-}); // added
+	console.log(err.stack);
+});
