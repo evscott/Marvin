@@ -10,7 +10,7 @@ const client = new Wit({
 
 app.use(express.static(__dirname + "/public"));
 
-const server = app.listen(port, () =>
+const server = app.listen(port, "0.0.0.0", () =>
 	console.log("Example app listening on port %d", port)
 );
 
