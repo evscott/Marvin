@@ -16,6 +16,6 @@
     "node-wit": "^5.0.0",
     "nodemon": "^1.17.3",
     "socket.io": "^2.1.0",
-    "micro": "latest"
+    "apiai": "^4.0.3"
   }
 }
