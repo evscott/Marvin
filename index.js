@@ -3,10 +3,8 @@ const app = express();
 const Botmaster = require("botmaster");
 const SocketioBot = require("botmaster-socket.io");
 const port = process.env.PORT || 3000;
-const { Wit, log, interactive } = require("node-wit");
-const client = new Wit({
-	accessToken: "DOBCAP2OLGE3X7H3NC4HKHIL5HBMH77B"
-});
+const apiai = require("apiai");
+const client = apiai("f50331d79d79462daa086007759cd014");
 
 app.use(express.static(__dirname + "/public"));
 
@@ -22,13 +20,23 @@ const socketioBot = new SocketioBot({ id: "Marvin", server });
 
 botmaster.addBot(socketioBot);
 
+let query;
+
 botmaster.use({
 	type: "incoming",
-	name: "my-middleware",
+	name: "my-middleware for Marvin",
 	controller: (bot, update) => {
-		client.message(update.message.text, {}).then(data => {
-			return bot.reply(update, JSON.stringify(data));
+		query = client.textRequest(update.message.text, {
+			sessionId: "1"
 		});
+
+		query.on("response", response => {
+			if (response.result.fulfillment.speech != "") {
+				return bot.reply(update, response.result.fulfillment.speech);
+			}
+		});
+
+		query.end();
 	}
 });
 
